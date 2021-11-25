@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "lib": ["ES2020"],
+        "module": "CommonJS",
+        "target": "ES2020",
+        "noImplicitAny": true,
+        "moduleResolution": "Node",
+        "outDir": "dist"
+    },
+    "include": ["src/**/*"]
+}
