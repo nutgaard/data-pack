@@ -20,6 +20,9 @@
     ],
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "npm run build-ts && npm run build-tsc",
         "build-ts": "node scripts/esbuild.js",
