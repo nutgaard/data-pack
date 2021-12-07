@@ -9,10 +9,11 @@ export async function read(path: string): Promise<string> {
 export function readSync(path: string): string {
     return fs.readFileSync(path, 'utf8');
 }
-export async function readJSON(path: string): Promise<string> {
-    return fsP.readFile(path, 'utf8').then(deserialize);
+export async function readJSON<T>(path: string): Promise<T> {
+    const content = await read(path);
+    return deserialize<T>(content);
 }
-export function readJSONSync(path: string): string {
+export function readJSONSync<T>(path: string): T {
     return deserialize(fs.readFileSync(path, 'utf8'));
 }
 

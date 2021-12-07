@@ -11,7 +11,6 @@ test('should serialize objects and arrays', () => {
 });
 
 test('should deserialize json', () => {
-    assertThat('content', deserialize('content'), 'array is deserialized');
     assertThat(['content'], deserialize('[\n  "content"\n]'), 'array is deserialized');
     assertThat({ content: 'hei' }, deserialize('{\n  "content": "hei"\n}'), 'object is deserialized');
 });

@@ -144,10 +144,11 @@ export class GeneratorFlow<T = unknown> {
         return count;
     }
 
-    peek() {
+    peek(block: (t: T) => void) {
         const thisGenerator = this.generator();
         return new GeneratorFlow(function* () {
             for (const val of thisGenerator) {
+                block(val);
                 yield val;
             }
         });
