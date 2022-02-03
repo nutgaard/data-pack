@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { test, assertThat } from './test-lib';
-import { parseCSVSync } from '../src/csv';
+import { test, assertThat } from '../test-lib';
+import { parseCSVSync, CsvFormat } from '../../src/dataformat/csv';
 
 test('should be able to parse super simple csv', () => {
     const csv = parseCSVSync('h1,h2\nv1,v2\nv3,v4');
@@ -41,4 +41,18 @@ test('should be able to parse csv with multilne content', () => {
         parseCSVSync(content),
         'csv content should match'
     );
+});
+
+test('should implement csv dataformat', () => {
+    const data = [
+        ['Header 1', 'Header "2"'],
+        ['value 1', 'value "2"'],
+        ['value 2', "value '2'"],
+        ['value 3', 'value \n"2\n and more']
+    ];
+
+    const textual: string = CsvFormat.serialize(data);
+    const recreated = CsvFormat.deserialize(textual);
+
+    assertThat(data, recreated, 'recreated json is similar to original data');
 });

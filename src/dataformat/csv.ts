@@ -1,4 +1,5 @@
-import { GeneratorFlow } from './generator-flow';
+import { GeneratorFlow } from '../generator-flow';
+import { DataFormat } from './domain';
 
 type Quote = '"' | "'";
 
@@ -47,6 +48,10 @@ function readCSVLine(chars: string[], startAt: number, delimiter: string = ','):
     return [i + 1, values];
 }
 
+function writeCSVLine(line: Array<string>, delimiter: string = ','): string {
+    return line.map((it) => `"${it.replace(/"/g, '\\"')}"`).join(delimiter);
+}
+
 export function* parseCSV(content: string, delimiter: string = ','): Generator<Array<string>, void> {
     const chars = content.split('');
     let charPointer = 0;
@@ -68,3 +73,22 @@ export function parseCSVToFlow(content: string, delimiter: string = ','): Genera
 export function parseCSVSync(content: string, delimiter: string = ','): Array<string[]> {
     return parseCSVToFlow(content, delimiter).toArray();
 }
+
+export function* writeAsCSV(content: Array<string[]>, delimiter: string = ','): Generator<string, void> {
+    for (const line of content) {
+        yield writeCSVLine(line, delimiter);
+    }
+}
+
+export function writeAsCSVSync(content: Array<string[]>, delimiter: string = ','): string {
+    return new GeneratorFlow<string>(() => writeAsCSV(content, delimiter)).toArray().join('\n');
+}
+
+export const CsvFormat: DataFormat<unknown> = {
+    serialize(object: Array<string[]>, delimiter: string = ','): string {
+        return writeAsCSVSync(object, delimiter);
+    },
+    deserialize(content: string, delimiter: string = ','): Array<string[]> {
+        return parseCSVSync(content, delimiter);
+    }
+};

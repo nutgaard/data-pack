@@ -1,4 +1,4 @@
 export * as File from './file';
-export * as CSV from './csv';
-export * as Json from './json';
+export * as CSV from './dataformat/csv';
+export * as Json from './dataformat/json';
 export { GeneratorFlow } from './generator-flow';

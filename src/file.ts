@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { WriteStream } from 'fs';
 import * as fsP from 'fs/promises';
-import { serialize, deserialize } from './json';
+import { serialize, deserialize } from './dataformat/json';
 
 export async function read(path: string): Promise<string> {
     return fsP.readFile(path, 'utf8');

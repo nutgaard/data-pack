@@ -1,2 +1,2 @@
-import './csv.test';
-import './json.test';
+import './dataformat/csv.test';
+import './dataformat/json.test';
