@@ -10,6 +10,7 @@ const cyan = (msg: string) => `${CYAN}${msg}${RESET}`;
 
 interface Test {
     name: string;
+    only: boolean;
     exec(): void;
 }
 
@@ -29,12 +30,16 @@ const testsWithErrors: string[] = [];
 let __scheduled: ReturnType<typeof setTimeout> | undefined = undefined;
 let __assertions: Assertion[] = [];
 
-export function test(name: string, exec: () => void) {
-    tests.push({ name, exec });
+export function test(name: string, exec: () => void, only: boolean = false) {
+    tests.push({ name, exec, only });
     if (__scheduled) {
         clearTimeout(__scheduled);
     }
     __scheduled = setTimeout(runTests, 0);
+}
+
+export function onlytest(name: string, exec: () => void) {
+    test(name, exec, true);
 }
 
 export function assertThat(expected: any | Verifier, actual: any, message: string) {
@@ -64,7 +69,9 @@ export function assertThat(expected: any | Verifier, actual: any, message: strin
 
 async function runTests() {
     console.log('');
-    for (const { name, exec } of tests) {
+    const onlyTestsDefined = tests.some((it) => it.only);
+    const testsToRun = onlyTestsDefined ? tests.filter((it) => it.only) : tests;
+    for (const { name, exec } of testsToRun) {
         try {
             let hasErrors = false;
             __assertions = [];
