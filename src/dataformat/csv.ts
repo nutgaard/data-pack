@@ -29,7 +29,6 @@ function readCSVLine(chars: string[], startAt: number, delimiter: string = ','):
             }
         } else if (ch === '\\') {
             buffer.push(chars[++i]);
-            continue;
         } else if (ch === delimiter && currentQuote === undefined) {
             values.push(buffer.join(''));
             buffer = [];
