@@ -36,6 +36,15 @@ function serialize(content: any): string;
 function deserialize<T>(content: string): T;
 ```
 
+## KeyValue (KV)
+
+Utilities for parsing and writing in key-value pairs
+
+```typescript
+function writeKVSync(object: object, delimiters: KvDelimiters): string;
+function parseKVSync<T>(content: string, delimiters: KvDelimiters): T;
+```
+
 ## Generator flows
 
 Utilities for working with generators as if they are arrays

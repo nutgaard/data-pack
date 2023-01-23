@@ -1,12 +1,26 @@
 import { DataFormat } from './domain';
+import { type } from 'os';
 
-function writeAsKVSync(object: unknown, delimiter: string = ' '): string {
+interface KvDelimiters {
+    keyValueDelimiter: string;
+    keyDelimiter: string;
+}
+
+export const defaultKvDelimiters: KvDelimiters = {
+    keyValueDelimiter: '=',
+    keyDelimiter: ' '
+};
+
+export function writeKVSync(object: object, delimiters: KvDelimiters = defaultKvDelimiters): string {
     if (typeof object === 'string') return object;
     return Object.entries(object)
-        .map(([key, value]) => `${key}='${value.replace(/'/g, "\\'")}'`)
-        .join(delimiter);
+        .map(([key, value]) => {
+            const valueString = typeof value === 'string' ? value.replace(/'/g, "\\'") : value.toString();
+            return `${key}${delimiters.keyValueDelimiter}'${valueString}'`;
+        })
+        .join(delimiters.keyDelimiter);
 }
-function parseKVSync<T>(content: string, delimiter: string = ' '): T {
+export function parseKVSync<T>(content: string, delimiters: KvDelimiters = defaultKvDelimiters): T {
     const chars = content.split('');
     const accumulator: { [key: string]: string } = {};
     let keybuffer: string[] = [];
@@ -26,9 +40,12 @@ function parseKVSync<T>(content: string, delimiter: string = ' '): T {
             }
         } else if (ch === '\\') {
             buffer.push(chars[++i]);
-        } else if (ch === '=' && currentQuote === undefined) {
+        } else if (ch === delimiters.keyValueDelimiter && currentQuote === undefined) {
             buffer = valuebuffer;
-        } else if ((ch === delimiter && currentQuote === undefined) || (ch === '\n' && currentQuote === undefined)) {
+        } else if (
+            (ch === delimiters.keyDelimiter && currentQuote === undefined) ||
+            (ch === '\n' && currentQuote === undefined)
+        ) {
             if (keybuffer.length > 0) {
                 accumulator[keybuffer.join('')] = valuebuffer.join('');
             }
@@ -48,11 +65,12 @@ function parseKVSync<T>(content: string, delimiter: string = ' '): T {
     return accumulator as unknown as T;
 }
 
-export const KvFormat: DataFormat<unknown> = {
-    serialize(object: Array<string[]>, delimiter: string = ' '): string {
-        return writeAsKVSync(object, delimiter);
+type KvFormat<T> = DataFormat<T>;
+export const KvFormat: KvFormat<any> = {
+    serialize(object: object, delimiters: KvDelimiters = defaultKvDelimiters): string {
+        return writeKVSync(object, delimiters);
     },
-    deserialize(content: string, delimiter: string = ' '): Array<string[]> {
-        return parseKVSync(content, delimiter);
+    deserialize<T>(content: string, delimiters: KvDelimiters = defaultKvDelimiters): T {
+        return parseKVSync(content, delimiters);
     }
 };
